@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Options</title>
+		<link type="text/css" rel="stylesheet" href="edition.css" />
+		<script src="options.js" defer></script>
+		<style>
+			body { font-family: sans-serif; padding: 12px; }
+			fieldset { margin-bottom: 14px; }
+			legend { font-weight: bold; }
+			.row { margin: 4px 0; }
+			#status { color: green; margin-left: 10px; }
+		</style>
+	</head>
+	<body class="body">
+		<table>
+			<tr>
+				<td><img src="c48.png" /></td>
+				<td><h1 id="name"></h1></td>
+			</tr>
+		</table>
+
+		<div class="row">
+			<input type="button" id="save" value="Save" />
+			<span id="status"></span>
+		</div>
+
+		<fieldset>
+			<legend>Email Site</legend>
+			<div id="siteList"></div>
+		</fieldset>
+
+		<fieldset>
+			<legend>Email Checking</legend>
+			<div class="row"><label><input type="checkbox" id="inbox" /> Count only unread emails in Inbox</label></div>
+		</fieldset>
+
+		<fieldset>
+			<legend>Auto-check</legend>
+			<div class="row">
+				Often
+				<input id="autoCheckRange" type="range" min="1" max="181" step="1" />
+				Never
+			</div>
+			<div class="row" id="autoCheckText"></div>
+			<div class="row"><small>Warning: checking more often than every 3 minutes may overload the mail server.</small></div>
+		</fieldset>
+
+		<fieldset>
+			<legend>Toolbar Icon</legend>
+			<div class="row"><label><input type="checkbox" id="showToolbarNumber" /> Show counter on toolbar button</label></div>
+			<div class="row"><label><input type="radio" name="iconClick" id="showPopup" /> Show menu on click</label></div>
+			<div class="row"><label><input type="radio" name="iconClick" id="noPopup" /> Single click: open mail / Double click: check now</label></div>
+		</fieldset>
+
+		<fieldset>
+			<legend>Opening Email</legend>
+			<div class="row"><label><input type="checkbox" id="resetCounter" /> Reset counter upon opening email</label></div>
+			<div class="row"><label><input type="checkbox" id="reUseExistingMailTab" /> Reuse existing email tab first</label></div>
+			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInCurrentTab" /> Open email in current tab</label></div>
+			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewTab" /> Open email in new tab</label></div>
+			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewBackgroundTab" /> Open email in new background tab</label></div>
+		</fieldset>
+	</body>
+</html>

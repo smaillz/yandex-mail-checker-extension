@@ -1,19 +1,16 @@
 //================================================================
-// Copyright 2017 Sonthakit Leelahanon. All rights reserved.
+// About - Manifest V3
 //================================================================
 "use strict";
 
-
-//================================================
-// Begin here
-//================================================
 document.addEventListener("DOMContentLoaded", function() {
-	chrome.runtime.getBackgroundPage(function(backgroundPage) {
-		var backgroundWin = backgroundPage;
-		document.getElementById("name").innerText = chrome.i18n.getMessage("name");
-		document.getElementById("version").innerText = "Version " + backgroundWin.thisVersion.toFixed(2);
-	});
+	var manifest = chrome.runtime.getManifest();
+	try {
+		document.getElementById("name").textContent = chrome.i18n.getMessage("name");
+	} catch (e) {}
+	document.getElementById("version").textContent = "Version " + manifest.version;
 });
+
 window.addEventListener("contextmenu", function(event) {
 	event.preventDefault();
 	event.stopPropagation();
