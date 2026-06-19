@@ -3,12 +3,12 @@
 //================================================================
 "use strict";
 
-var MAX_AUTO_CHECK_RANGE = 181;
-var NEVER_INTERVAL = 0x7FFFFFFF;
+const MAX_AUTO_CHECK_RANGE = 181;
+const NEVER_INTERVAL = 0x7fffffff;
 
-var SITE_NAMES = ["yandex.com", "yandex.by", "yandex.kz", "yandex.ru", "yandex.com.tr", "yandex.ua"];
+const SITE_NAMES = ["yandex.com", "yandex.by", "yandex.kz", "yandex.ru", "yandex.com.tr", "yandex.ua"];
 
-var DEFAULT_PREFERENCE = {
+const DEFAULT_PREFERENCE = {
 	site: 0,
 	inbox: true,
 	interval: 30,
@@ -16,124 +16,121 @@ var DEFAULT_PREFERENCE = {
 	showPopup: true,
 	resetCounter: true,
 	reUseExistingMailTab: true,
-	openBehavior: 1
+	openBehavior: 1,
 };
 
-function msg(key, subs) {
-	try { return chrome.i18n.getMessage(key, subs) || key; } catch (e) { return key; }
-}
+const $ = (id) => document.getElementById(id);
 
-function getPreference() {
-	return new Promise(function(resolve) {
-		chrome.storage.local.get("preference", function(items) {
-			var pref = items && items.preference ? items.preference : {};
-			resolve(Object.assign({}, DEFAULT_PREFERENCE, pref));
-		});
-	});
+const msg = (key, subs) => {
+	try {
+		return chrome.i18n.getMessage(key, subs) || key;
+	} catch {
+		return key;
+	}
+};
+
+async function getPreference() {
+	const { preference } = await chrome.storage.local.get("preference");
+	return { ...DEFAULT_PREFERENCE, ...(preference ?? {}) };
 }
 
 function buildSiteList(selectedSite) {
-	var container = document.getElementById("siteList");
-	container.textContent = "";
-	SITE_NAMES.forEach(function(name, index) {
-		var row = document.createElement("div");
-		row.className = "row";
-		var label = document.createElement("label");
-		var radio = document.createElement("input");
+	const container = $("siteList");
+	container.replaceChildren();
+	SITE_NAMES.forEach((name, index) => {
+		const label = document.createElement("label");
+		const radio = document.createElement("input");
 		radio.type = "radio";
 		radio.name = "site";
-		radio.id = "site" + index;
-		radio.checked = (index === selectedSite);
-		label.appendChild(radio);
-		label.appendChild(document.createTextNode(" " + name));
-		row.appendChild(label);
-		container.appendChild(row);
+		radio.id = `site${index}`;
+		radio.checked = index === selectedSite;
+		label.append(radio, ` ${name}`);
+
+		const row = document.createElement("div");
+		row.className = "row";
+		row.append(label);
+		container.append(row);
 	});
 }
 
 function updateAutoCheckText() {
-	var value = Number(document.getElementById("autoCheckRange").value);
-	var text;
+	const value = Number($("autoCheckRange").value);
+	let text;
 	if (value === MAX_AUTO_CHECK_RANGE) {
 		text = msg("never");
 	} else if (value >= 60) {
-		var hours = Math.floor(value / 60);
-		var minutes = value % 60;
-		text = hours + " " + msg("hoursShort");
-		if (minutes !== 0) { text += " " + minutes + " " + msg("minutesShort"); }
+		const hours = Math.floor(value / 60);
+		const minutes = value % 60;
+		text = `${hours} ${msg("hoursShort")}`;
+		if (minutes !== 0) { text += ` ${minutes} ${msg("minutesShort")}`; }
 	} else {
-		text = value + " " + msg("minutesShort");
+		text = `${value} ${msg("minutesShort")}`;
 	}
-	document.getElementById("autoCheckText").textContent = msg("checkEvery", [text]);
+	$("autoCheckText").textContent = msg("checkEvery", [text]);
 }
 
 function intervalToSlider(interval) {
 	if (interval === NEVER_INTERVAL) { return MAX_AUTO_CHECK_RANGE; }
-	if (interval < 1) { return 1; }
-	if (interval > 180) { return 180; }
-	return interval;
+	return Math.min(180, Math.max(1, interval));
 }
 
 function sliderToInterval(slider) {
-	if (slider === MAX_AUTO_CHECK_RANGE) { return NEVER_INTERVAL; }
-	return slider;
+	return slider === MAX_AUTO_CHECK_RANGE ? NEVER_INTERVAL : slider;
 }
 
-function loadForm(pref) {
-	buildSiteList(pref.site);
-	document.getElementById("inbox").checked = pref.inbox;
-	document.getElementById("autoCheckRange").value = intervalToSlider(pref.interval);
+function loadForm(prefs) {
+	buildSiteList(prefs.site);
+	$("inbox").checked = prefs.inbox;
+	$("autoCheckRange").value = intervalToSlider(prefs.interval);
 	updateAutoCheckText();
-	document.getElementById("showToolbarNumber").checked = pref.showToolbarNumber;
-	document.getElementById("showPopup").checked = pref.showPopup;
-	document.getElementById("noPopup").checked = !pref.showPopup;
-	document.getElementById("resetCounter").checked = pref.resetCounter;
-	document.getElementById("reUseExistingMailTab").checked = pref.reUseExistingMailTab;
-	document.getElementById("openEmailInCurrentTab").checked = (pref.openBehavior === 0);
-	document.getElementById("openEmailInNewTab").checked = (pref.openBehavior === 1);
-	document.getElementById("openEmailInNewBackgroundTab").checked = (pref.openBehavior === 2);
+	$("showToolbarNumber").checked = prefs.showToolbarNumber;
+	$("showPopup").checked = prefs.showPopup;
+	$("noPopup").checked = !prefs.showPopup;
+	$("resetCounter").checked = prefs.resetCounter;
+	$("reUseExistingMailTab").checked = prefs.reUseExistingMailTab;
+	$("openEmailInCurrentTab").checked = prefs.openBehavior === 0;
+	$("openEmailInNewTab").checked = prefs.openBehavior === 1;
+	$("openEmailInNewBackgroundTab").checked = prefs.openBehavior === 2;
 }
 
 function readForm() {
-	var pref = {};
-	pref.site = 0;
-	for (var i = 0; i < SITE_NAMES.length; i++) {
-		var radio = document.getElementById("site" + i);
-		if (radio && radio.checked) { pref.site = i; break; }
+	const selectedSite = SITE_NAMES.findIndex((_, i) => $(`site${i}`)?.checked);
+	let openBehavior = 1;
+	if ($("openEmailInCurrentTab").checked) {
+		openBehavior = 0;
+	} else if ($("openEmailInNewBackgroundTab").checked) {
+		openBehavior = 2;
 	}
-	pref.inbox = document.getElementById("inbox").checked;
-	pref.interval = sliderToInterval(Number(document.getElementById("autoCheckRange").value));
-	pref.showToolbarNumber = document.getElementById("showToolbarNumber").checked;
-	pref.showPopup = document.getElementById("showPopup").checked;
-	pref.resetCounter = document.getElementById("resetCounter").checked;
-	pref.reUseExistingMailTab = document.getElementById("reUseExistingMailTab").checked;
-	if (document.getElementById("openEmailInCurrentTab").checked) {
-		pref.openBehavior = 0;
-	} else if (document.getElementById("openEmailInNewBackgroundTab").checked) {
-		pref.openBehavior = 2;
-	} else {
-		pref.openBehavior = 1;
-	}
-	return pref;
+
+	return {
+		site: selectedSite === -1 ? 0 : selectedSite,
+		inbox: $("inbox").checked,
+		interval: sliderToInterval(Number($("autoCheckRange").value)),
+		showToolbarNumber: $("showToolbarNumber").checked,
+		showPopup: $("showPopup").checked,
+		resetCounter: $("resetCounter").checked,
+		reUseExistingMailTab: $("reUseExistingMailTab").checked,
+		openBehavior,
+	};
 }
 
-function saveForm() {
-	var pref = readForm();
-	chrome.storage.local.set({ preference: pref }, function() {
-		chrome.runtime.sendMessage({ type: "prefsUpdated" });
-		var status = document.getElementById("status");
-		status.textContent = msg("saved");
-		setTimeout(function() { status.textContent = ""; }, 1500);
-	});
+async function saveForm() {
+	await chrome.storage.local.set({ preference: readForm() });
+	chrome.runtime.sendMessage({ type: "prefsUpdated" });
+	const status = $("status");
+	status.textContent = msg("saved");
+	setTimeout(() => { status.textContent = ""; }, 1500);
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async () => {
 	try {
-		document.getElementById("name").textContent = chrome.i18n.getMessage("name");
-	} catch (e) {}
+		$("name").textContent = chrome.i18n.getMessage("name");
+	} catch {
+		// i18n is optional here.
+	}
 
-	getPreference().then(loadForm);
+	loadForm(await getPreference());
 
-	document.getElementById("autoCheckRange").addEventListener("input", updateAutoCheckText);
-	document.getElementById("save").addEventListener("click", saveForm);
+	$("autoCheckRange").addEventListener("input", updateAutoCheckText);
+	$("save").addEventListener("click", saveForm);
 });

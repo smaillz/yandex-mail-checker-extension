@@ -3,15 +3,17 @@
 //================================================================
 "use strict";
 
-document.addEventListener("DOMContentLoaded", function() {
-	var manifest = chrome.runtime.getManifest();
+document.addEventListener("DOMContentLoaded", () => {
+	const { version } = chrome.runtime.getManifest();
 	try {
 		document.getElementById("name").textContent = chrome.i18n.getMessage("name");
-	} catch (e) {}
-	document.getElementById("version").textContent = chrome.i18n.getMessage("versionLabel", [manifest.version]);
+	} catch {
+		// i18n is optional here.
+	}
+	document.getElementById("version").textContent = chrome.i18n.getMessage("versionLabel", [version]);
 });
 
-window.addEventListener("contextmenu", function(event) {
+window.addEventListener("contextmenu", (event) => {
 	event.preventDefault();
 	event.stopPropagation();
 	return false;

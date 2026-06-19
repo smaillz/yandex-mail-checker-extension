@@ -4,17 +4,13 @@
 "use strict";
 
 function localizePage() {
-	var nodes = document.querySelectorAll("[data-i18n]");
-	for (var i = 0; i < nodes.length; i++) {
-		var key = nodes[i].getAttribute("data-i18n");
-		var message = chrome.i18n.getMessage(key);
-		if (message) { nodes[i].textContent = message; }
+	for (const node of document.querySelectorAll("[data-i18n]")) {
+		const message = chrome.i18n.getMessage(node.dataset.i18n);
+		if (message) { node.textContent = message; }
 	}
-	var valueNodes = document.querySelectorAll("[data-i18n-value]");
-	for (var j = 0; j < valueNodes.length; j++) {
-		var valueKey = valueNodes[j].getAttribute("data-i18n-value");
-		var valueMessage = chrome.i18n.getMessage(valueKey);
-		if (valueMessage) { valueNodes[j].value = valueMessage; }
+	for (const node of document.querySelectorAll("[data-i18n-value]")) {
+		const message = chrome.i18n.getMessage(node.dataset.i18nValue);
+		if (message) { node.value = message; }
 	}
 }
 
