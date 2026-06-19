@@ -14,12 +14,13 @@
 
    "save": { "message": "Save" },
    "saved": { "message": "Saved" },
-   "aboutBtn": { "message": "About" },
    "optionsBtn": { "message": "Options..." },
    "checkNow": { "message": "Check now" },
    "openMail": { "message": "Open mail" },
 
    "optionsTitle": { "message": "Options" },
+   "langLegend": { "message": "Language" },
+   "langAuto": { "message": "Automatic (browser)" },
    "siteLegend": { "message": "Email Site" },
    "checkingLegend": { "message": "Email Checking" },
    "inboxOnly": { "message": "Count only unread emails in Inbox" },
@@ -43,6 +44,17 @@
    "openCurrent": { "message": "Open email in current tab" },
    "openNew": { "message": "Open email in new tab" },
    "openBackground": { "message": "Open email in new background tab" },
+
+   "statusChecking": { "message": "Checking..." },
+   "statusUnread": {
+      "message": "Unread ($N$)",
+      "placeholders": { "n": { "content": "$1" } }
+   },
+   "statusEmpty": { "message": "No unread email" },
+   "statusLoggedOut": { "message": "Logged out" },
+   "statusDisconnected": { "message": "Not connected" },
+   "statusTimeout": { "message": "Request timeout" },
+   "statusUnknown": { "message": "Unrecognized response" },
 
    "aboutTitle": { "message": "About" },
    "versionLabel": {

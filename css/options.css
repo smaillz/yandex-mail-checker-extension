@@ -96,6 +96,22 @@ body {
 	cursor: pointer;
 }
 
+.select {
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--bg);
+	color: var(--text);
+	font: inherit;
+	cursor: pointer;
+}
+
+.select:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+
 .site-list {
 	display: flex;
 	flex-direction: column;
@@ -170,4 +186,31 @@ body {
 	font-size: 13px;
 	font-weight: 500;
 	color: var(--success);
+}
+
+.about-row {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.about-icon {
+	width: 48px;
+	height: 48px;
+	flex: none;
+}
+
+.about-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.about-name {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.about-version {
+	margin: 0;
 }

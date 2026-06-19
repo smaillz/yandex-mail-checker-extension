@@ -14,12 +14,13 @@
 
    "save": { "message": "Сохранить" },
    "saved": { "message": "Сохранено" },
-   "aboutBtn": { "message": "О расширении" },
    "optionsBtn": { "message": "Настройки..." },
    "checkNow": { "message": "Проверить сейчас" },
    "openMail": { "message": "Открыть почту" },
 
    "optionsTitle": { "message": "Настройки" },
+   "langLegend": { "message": "Язык" },
+   "langAuto": { "message": "Автоматически (браузер)" },
    "siteLegend": { "message": "Почтовый сайт" },
    "checkingLegend": { "message": "Проверка почты" },
    "inboxOnly": { "message": "Считать непрочитанные только во «Входящих»" },
@@ -43,6 +44,17 @@
    "openCurrent": { "message": "Открывать в текущей вкладке" },
    "openNew": { "message": "Открывать в новой вкладке" },
    "openBackground": { "message": "Открывать в новой фоновой вкладке" },
+
+   "statusChecking": { "message": "Проверка..." },
+   "statusUnread": {
+      "message": "Непрочитанных ($N$)",
+      "placeholders": { "n": { "content": "$1" } }
+   },
+   "statusEmpty": { "message": "Нет непрочитанных писем" },
+   "statusLoggedOut": { "message": "Вы вышли из аккаунта" },
+   "statusDisconnected": { "message": "Нет соединения" },
+   "statusTimeout": { "message": "Превышено время ожидания" },
+   "statusUnknown": { "message": "Нераспознанный ответ" },
 
    "aboutTitle": { "message": "О расширении" },
    "versionLabel": {

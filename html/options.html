@@ -16,6 +16,15 @@
 
 			<main>
 				<section class="card">
+					<h2 data-i18n="langLegend">Language</h2>
+					<select id="lang" class="select">
+						<option value="auto" data-i18n="langAuto">Automatic (browser)</option>
+						<option value="en">English</option>
+						<option value="ru">Русский</option>
+					</select>
+				</section>
+
+				<section class="card">
 					<h2 data-i18n="siteLegend">Email Site</h2>
 					<div id="siteList" class="site-list"></div>
 				</section>
@@ -77,6 +86,19 @@
 						<input type="radio" name="openBehavior" id="openEmailInNewBackgroundTab" />
 						<span data-i18n="openBackground">Open email in new background tab</span>
 					</label>
+				</section>
+
+				<section class="card about">
+					<h2 data-i18n="aboutTitle">About</h2>
+					<div class="about-row">
+						<img class="about-icon" src="../icons/c48.png" alt="" />
+						<div class="about-meta">
+							<div class="about-name" id="aboutName"></div>
+							<div class="about-version hint" id="aboutVersion"></div>
+							<div class="hint"><span data-i18n="createdBy">Created by</span> Sonthakit Leelahanon</div>
+						</div>
+					</div>
+					<p class="hint" data-i18n="copyright">Copyright © 2017 Sonthakit Leelahanon. All rights reserved.</p>
 				</section>
 			</main>
 		</div>

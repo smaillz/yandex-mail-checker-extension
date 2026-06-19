@@ -1,17 +1,86 @@
 //================================================================
-// Lightweight i18n helper: fills [data-i18n] elements from _locales
+// i18n helper: loads a locale chosen in settings (not the browser
+// UI language) and fills [data-i18n] / [data-i18n-value] elements.
 //================================================================
 "use strict";
 
-function localizePage() {
-	for (const node of document.querySelectorAll("[data-i18n]")) {
-		const message = chrome.i18n.getMessage(node.dataset.i18n);
-		if (message) { node.textContent = message; }
-	}
-	for (const node of document.querySelectorAll("[data-i18n-value]")) {
-		const message = chrome.i18n.getMessage(node.dataset.i18nValue);
-		if (message) { node.value = message; }
-	}
-}
+const I18N = (() => {
+	const AVAILABLE = ["en", "ru"];
+	let messages = {};
 
-document.addEventListener("DOMContentLoaded", localizePage);
+	async function resolveLang() {
+		let lang = "auto";
+		try {
+			const { preference } = await chrome.storage.local.get("preference");
+			if (preference?.lang) { lang = preference.lang; }
+		} catch {
+			// storage may be unavailable; fall back to auto.
+		}
+		if (lang === "auto") {
+			const ui = (chrome.i18n.getUILanguage?.() || "en").toLowerCase();
+			lang = ui.startsWith("ru") ? "ru" : "en";
+		}
+		return AVAILABLE.includes(lang) ? lang : "en";
+	}
+
+	async function loadLocale(lang) {
+		const url = chrome.runtime.getURL(`_locales/${lang}/messages.json`);
+		const response = await fetch(url);
+		return response.json();
+	}
+
+	async function init() {
+		const lang = await resolveLang();
+		try {
+			messages = await loadLocale(lang);
+		} catch {
+			messages = await loadLocale("en").catch(() => ({}));
+		}
+		return lang;
+	}
+
+	function getMessage(key, subs) {
+		const entry = messages[key];
+		if (!entry?.message) {
+			try { return chrome.i18n.getMessage(key, subs) || key; } catch { return key; }
+		}
+		let text = entry.message;
+		if (entry.placeholders) {
+			for (const [name, def] of Object.entries(entry.placeholders)) {
+				text = text.replace(new RegExp(`\\$${name}\\$`, "gi"), def.content ?? "");
+			}
+		}
+		const args = subs == null ? [] : Array.isArray(subs) ? subs : [subs];
+		text = text.replace(/\$(\d+)/g, (_, n) => args[Number(n) - 1] ?? "");
+		return text;
+	}
+
+	function localizePage() {
+		for (const node of document.querySelectorAll("[data-i18n]")) {
+			const message = getMessage(node.dataset.i18n);
+			if (message) { node.textContent = message; }
+		}
+		for (const node of document.querySelectorAll("[data-i18n-value]")) {
+			const message = getMessage(node.dataset.i18nValue);
+			if (message) { node.value = message; }
+		}
+	}
+
+	function whenDOMReady(fn) {
+		if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", fn);
+		} else {
+			fn();
+		}
+	}
+
+	const ready = init();
+	ready.then(() => whenDOMReady(localizePage));
+
+	// Re-read the selected locale and re-render the page (after a language change).
+	function reload() {
+		return init().then(localizePage);
+	}
+
+	return { ready, getMessage, localizePage, reload };
+})();

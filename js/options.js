@@ -9,6 +9,7 @@ const NEVER_INTERVAL = 0x7fffffff;
 const SITE_NAMES = ["yandex.com", "yandex.by", "yandex.kz", "yandex.ru", "yandex.com.tr", "yandex.ua"];
 
 const DEFAULT_PREFERENCE = {
+	lang: "auto",
 	site: 0,
 	inbox: true,
 	interval: 30,
@@ -21,13 +22,7 @@ const DEFAULT_PREFERENCE = {
 
 const $ = (id) => document.getElementById(id);
 
-const msg = (key, subs) => {
-	try {
-		return chrome.i18n.getMessage(key, subs) || key;
-	} catch {
-		return key;
-	}
-};
+const msg = (key, subs) => I18N.getMessage(key, subs);
 
 async function getPreference() {
 	const { preference } = await chrome.storage.local.get("preference");
@@ -77,6 +72,7 @@ function sliderToInterval(slider) {
 }
 
 function loadForm(prefs) {
+	$("lang").value = prefs.lang;
 	buildSiteList(prefs.site);
 	$("inbox").checked = prefs.inbox;
 	$("autoCheckRange").value = intervalToSlider(prefs.interval);
@@ -101,6 +97,7 @@ function readForm() {
 	}
 
 	return {
+		lang: $("lang").value,
 		site: selectedSite === -1 ? 0 : selectedSite,
 		inbox: $("inbox").checked,
 		interval: sliderToInterval(Number($("autoCheckRange").value)),
@@ -112,22 +109,28 @@ function readForm() {
 	};
 }
 
+function applyDynamicTexts() {
+	$("name").textContent = msg("name");
+	$("aboutName").textContent = msg("name");
+	const { version } = chrome.runtime.getManifest();
+	$("aboutVersion").textContent = msg("versionLabel", [version]);
+	updateAutoCheckText();
+}
+
 async function saveForm() {
 	await chrome.storage.local.set({ preference: readForm() });
 	chrome.runtime.sendMessage({ type: "prefsUpdated" });
+	await I18N.reload();
+	applyDynamicTexts();
 	const status = $("status");
 	status.textContent = msg("saved");
 	setTimeout(() => { status.textContent = ""; }, 1500);
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-	try {
-		$("name").textContent = chrome.i18n.getMessage("name");
-	} catch {
-		// i18n is optional here.
-	}
-
+	await I18N.ready;
 	loadForm(await getPreference());
+	applyDynamicTexts();
 
 	$("autoCheckRange").addEventListener("input", updateAutoCheckText);
 	$("save").addEventListener("click", saveForm);

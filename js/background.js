@@ -9,6 +9,7 @@ const REQUEST_TIMEOUT_MS = 50000;
 const DOUBLE_CLICK_MS = 1000;
 
 const DEFAULT_PREFERENCE = {
+	lang: "auto",
 	site: 0,
 	inbox: true,
 	interval: 30,
@@ -21,6 +22,7 @@ const DEFAULT_PREFERENCE = {
 
 const CHECKING_COLOR = [60, 120, 216, 255];
 const BADGE_COLOR = [211, 47, 47, 255];
+const AVAILABLE_LANGS = ["en", "ru"];
 
 // In-memory (non-persistent) state.
 let colorIcons = null;
@@ -28,6 +30,8 @@ let grayIcons = null;
 let checking = false;
 let firstClickTime = 0;
 let clickTimer = null;
+let i18nMessages = {};
+let i18nLang = null;
 
 
 //================================================
@@ -40,6 +44,47 @@ async function getPreference() {
 		await chrome.storage.local.set({ preference: merged });
 	}
 	return merged;
+}
+
+
+//================================================
+// Localization (locale chosen in settings)
+//================================================
+function resolveLang(prefs) {
+	let lang = prefs?.lang || "auto";
+	if (lang === "auto") {
+		const ui = (chrome.i18n.getUILanguage?.() || "en").toLowerCase();
+		lang = ui.startsWith("ru") ? "ru" : "en";
+	}
+	return AVAILABLE_LANGS.includes(lang) ? lang : "en";
+}
+
+async function loadMessages(prefs) {
+	const lang = resolveLang(prefs);
+	if (i18nLang === lang) { return; }
+	try {
+		const response = await fetch(chrome.runtime.getURL(`_locales/${lang}/messages.json`));
+		i18nMessages = await response.json();
+		i18nLang = lang;
+	} catch {
+		// Keep whatever messages we already had.
+	}
+}
+
+function t(key, subs) {
+	const entry = i18nMessages[key];
+	if (!entry?.message) {
+		try { return chrome.i18n.getMessage(key, subs) || key; } catch { return key; }
+	}
+	let text = entry.message;
+	if (entry.placeholders) {
+		for (const [name, def] of Object.entries(entry.placeholders)) {
+			text = text.replace(new RegExp(`\\$${name}\\$`, "gi"), def.content ?? "");
+		}
+	}
+	const args = subs == null ? [] : Array.isArray(subs) ? subs : [subs];
+	text = text.replace(/\$(\d+)/g, (_, n) => args[Number(n) - 1] ?? "");
+	return text;
 }
 
 
@@ -96,15 +141,11 @@ async function setActionIcon(active) {
 // Apply status to the toolbar action
 //================================================
 function mailLabel() {
-	try {
-		return chrome.i18n.getMessage("email") || "Yandex Mail";
-	} catch {
-		return "Yandex Mail";
-	}
+	return t("email") || "Yandex Mail";
 }
 
 function setChecking() {
-	chrome.action.setTitle({ title: `${mailLabel()}: Checking...` });
+	chrome.action.setTitle({ title: `${mailLabel()}: ${t("statusChecking")}` });
 	chrome.action.setBadgeBackgroundColor({ color: CHECKING_COLOR });
 	chrome.action.setBadgeText({ text: "…" });
 }
@@ -117,32 +158,32 @@ function applyState(state, count, prefs) {
 		case "unread":
 			setActionIcon(true);
 			chrome.action.setBadgeText({ text: prefs?.showToolbarNumber && count > 0 ? String(count) : "" });
-			chrome.action.setTitle({ title: `${label}: Unread (${count})` });
+			chrome.action.setTitle({ title: `${label}: ${t("statusUnread", [String(count)])}` });
 			break;
 		case "empty":
 			setActionIcon(true);
 			chrome.action.setBadgeText({ text: "" });
-			chrome.action.setTitle({ title: `${label}: No unread email` });
+			chrome.action.setTitle({ title: `${label}: ${t("statusEmpty")}` });
 			break;
 		case "loggedout":
 			setActionIcon(false);
 			chrome.action.setBadgeText({ text: "" });
-			chrome.action.setTitle({ title: `${label}: Logged out` });
+			chrome.action.setTitle({ title: `${label}: ${t("statusLoggedOut")}` });
 			break;
 		case "disconnected":
 			setActionIcon(false);
 			chrome.action.setBadgeText({ text: "" });
-			chrome.action.setTitle({ title: `${label}: Not connected` });
+			chrome.action.setTitle({ title: `${label}: ${t("statusDisconnected")}` });
 			break;
 		case "timeout":
 			setActionIcon(false);
 			chrome.action.setBadgeText({ text: "" });
-			chrome.action.setTitle({ title: `${label}: Request timeout` });
+			chrome.action.setTitle({ title: `${label}: ${t("statusTimeout")}` });
 			break;
 		default:
 			setActionIcon(false);
 			chrome.action.setBadgeText({ text: "?" });
-			chrome.action.setTitle({ title: `${label}: Unrecognized response` });
+			chrome.action.setTitle({ title: `${label}: ${t("statusUnknown")}` });
 			break;
 	}
 }
@@ -197,11 +238,12 @@ async function fetchUnreadCount(prefs) {
 async function checkNow() {
 	if (checking) { return; }
 	checking = true;
-	setChecking();
 
 	let prefs;
 	try {
 		prefs = await getPreference();
+		await loadMessages(prefs);
+		setChecking();
 		const count = await fetchUnreadCount(prefs);
 		if (count === -3) {
 			applyState("disconnected", 0, prefs);
@@ -257,6 +299,7 @@ function resetCounterOnOpen(prefs) {
 
 async function openMail() {
 	const prefs = await getPreference();
+	await loadMessages(prefs);
 	if (prefs.reUseExistingMailTab) {
 		const tabs = await chrome.tabs.query({ windowType: "normal", url: matchPattern[prefs.site] });
 		if (tabs.length > 0) {

@@ -18,10 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		chrome.runtime.openOptionsPage();
 		close();
 	});
-	document.getElementById("about").addEventListener("click", () => {
-		chrome.tabs.create({ url: chrome.runtime.getURL("html/about.html") });
-		close();
-	});
 });
 
 window.addEventListener("contextmenu", (event) => {
