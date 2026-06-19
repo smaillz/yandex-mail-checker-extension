@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	try {
 		document.getElementById("name").textContent = chrome.i18n.getMessage("name");
 	} catch (e) {}
-	document.getElementById("version").textContent = "Version " + manifest.version;
+	document.getElementById("version").textContent = chrome.i18n.getMessage("versionLabel", [manifest.version]);
 });
 
 window.addEventListener("contextmenu", function(event) {

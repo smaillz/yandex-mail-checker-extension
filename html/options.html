@@ -2,8 +2,9 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<title>Options</title>
+		<title data-i18n="optionsTitle">Options</title>
 		<link type="text/css" rel="stylesheet" href="../css/edition.css" />
+		<script src="../js/i18n.js" defer></script>
 		<script src="../js/options.js" defer></script>
 		<style>
 			body { font-family: sans-serif; padding: 12px; }
@@ -22,45 +23,45 @@
 		</table>
 
 		<div class="row">
-			<input type="button" id="save" value="Save" />
+			<input type="button" id="save" data-i18n-value="save" value="Save" />
 			<span id="status"></span>
 		</div>
 
 		<fieldset>
-			<legend>Email Site</legend>
+			<legend data-i18n="siteLegend">Email Site</legend>
 			<div id="siteList"></div>
 		</fieldset>
 
 		<fieldset>
-			<legend>Email Checking</legend>
-			<div class="row"><label><input type="checkbox" id="inbox" /> Count only unread emails in Inbox</label></div>
+			<legend data-i18n="checkingLegend">Email Checking</legend>
+			<div class="row"><label><input type="checkbox" id="inbox" /> <span data-i18n="inboxOnly">Count only unread emails in Inbox</span></label></div>
 		</fieldset>
 
 		<fieldset>
-			<legend>Auto-check</legend>
+			<legend data-i18n="autoCheckLegend">Auto-check</legend>
 			<div class="row">
-				Often
+				<span data-i18n="often">Often</span>
 				<input id="autoCheckRange" type="range" min="1" max="181" step="1" />
-				Never
+				<span data-i18n="never">Never</span>
 			</div>
 			<div class="row" id="autoCheckText"></div>
-			<div class="row"><small>Warning: checking more often than every 3 minutes may overload the mail server.</small></div>
+			<div class="row"><small data-i18n="autoCheckWarning">Warning: checking more often than every 3 minutes may overload the mail server.</small></div>
 		</fieldset>
 
 		<fieldset>
-			<legend>Toolbar Icon</legend>
-			<div class="row"><label><input type="checkbox" id="showToolbarNumber" /> Show counter on toolbar button</label></div>
-			<div class="row"><label><input type="radio" name="iconClick" id="showPopup" /> Show menu on click</label></div>
-			<div class="row"><label><input type="radio" name="iconClick" id="noPopup" /> Single click: open mail / Double click: check now</label></div>
+			<legend data-i18n="toolbarLegend">Toolbar Icon</legend>
+			<div class="row"><label><input type="checkbox" id="showToolbarNumber" /> <span data-i18n="showCounter">Show counter on toolbar button</span></label></div>
+			<div class="row"><label><input type="radio" name="iconClick" id="showPopup" /> <span data-i18n="showMenu">Show menu on click</span></label></div>
+			<div class="row"><label><input type="radio" name="iconClick" id="noPopup" /> <span data-i18n="clickBehavior">Single click: open mail / Double click: check now</span></label></div>
 		</fieldset>
 
 		<fieldset>
-			<legend>Opening Email</legend>
-			<div class="row"><label><input type="checkbox" id="resetCounter" /> Reset counter upon opening email</label></div>
-			<div class="row"><label><input type="checkbox" id="reUseExistingMailTab" /> Reuse existing email tab first</label></div>
-			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInCurrentTab" /> Open email in current tab</label></div>
-			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewTab" /> Open email in new tab</label></div>
-			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewBackgroundTab" /> Open email in new background tab</label></div>
+			<legend data-i18n="openingLegend">Opening Email</legend>
+			<div class="row"><label><input type="checkbox" id="resetCounter" /> <span data-i18n="resetCounterOpt">Reset counter upon opening email</span></label></div>
+			<div class="row"><label><input type="checkbox" id="reUseExistingMailTab" /> <span data-i18n="reuseTab">Reuse existing email tab first</span></label></div>
+			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInCurrentTab" /> <span data-i18n="openCurrent">Open email in current tab</span></label></div>
+			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewTab" /> <span data-i18n="openNew">Open email in new tab</span></label></div>
+			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewBackgroundTab" /> <span data-i18n="openBackground">Open email in new background tab</span></label></div>
 		</fieldset>
 	</body>
 </html>

@@ -19,6 +19,10 @@ var DEFAULT_PREFERENCE = {
 	openBehavior: 1
 };
 
+function msg(key, subs) {
+	try { return chrome.i18n.getMessage(key, subs) || key; } catch (e) { return key; }
+}
+
 function getPreference() {
 	return new Promise(function(resolve) {
 		chrome.storage.local.get("preference", function(items) {
@@ -51,16 +55,16 @@ function updateAutoCheckText() {
 	var value = Number(document.getElementById("autoCheckRange").value);
 	var text;
 	if (value === MAX_AUTO_CHECK_RANGE) {
-		text = "Never";
+		text = msg("never");
 	} else if (value >= 60) {
 		var hours = Math.floor(value / 60);
 		var minutes = value % 60;
-		text = hours + (hours > 1 ? " hours" : " hour");
-		if (minutes !== 0) { text += " " + minutes + (minutes > 1 ? " minutes" : " minute"); }
+		text = hours + " " + msg("hoursShort");
+		if (minutes !== 0) { text += " " + minutes + " " + msg("minutesShort"); }
 	} else {
-		text = value + (value > 1 ? " minutes" : " minute");
+		text = value + " " + msg("minutesShort");
 	}
-	document.getElementById("autoCheckText").textContent = "Check every: " + text;
+	document.getElementById("autoCheckText").textContent = msg("checkEvery", [text]);
 }
 
 function intervalToSlider(interval) {
@@ -118,7 +122,7 @@ function saveForm() {
 	chrome.storage.local.set({ preference: pref }, function() {
 		chrome.runtime.sendMessage({ type: "prefsUpdated" });
 		var status = document.getElementById("status");
-		status.textContent = "Saved.";
+		status.textContent = msg("saved");
 		setTimeout(function() { status.textContent = ""; }, 1500);
 	});
 }

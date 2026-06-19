@@ -4,12 +4,6 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function() {
-	var openMailLabel = "Open mail";
-	try {
-		openMailLabel = "Open " + (chrome.i18n.getMessage("email") || "mail");
-	} catch (e) {}
-	document.getElementById("openMail").textContent = openMailLabel;
-
 	document.getElementById("openMail").addEventListener("click", function() {
 		chrome.runtime.sendMessage({ type: "openMail" });
 		window.close();

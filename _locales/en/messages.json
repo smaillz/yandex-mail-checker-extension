@@ -10,5 +10,45 @@
    },
    "name": {
       "message": "Watcher for Yandex Mail™"
-   }
+   },
+
+   "save": { "message": "Save" },
+   "saved": { "message": "Saved" },
+   "aboutBtn": { "message": "About" },
+   "optionsBtn": { "message": "Options..." },
+   "checkNow": { "message": "Check now" },
+   "openMail": { "message": "Open mail" },
+
+   "optionsTitle": { "message": "Options" },
+   "siteLegend": { "message": "Email Site" },
+   "checkingLegend": { "message": "Email Checking" },
+   "inboxOnly": { "message": "Count only unread emails in Inbox" },
+   "autoCheckLegend": { "message": "Auto-check" },
+   "often": { "message": "Often" },
+   "never": { "message": "Never" },
+   "checkEvery": {
+      "message": "Check every: $INTERVAL$",
+      "placeholders": { "interval": { "content": "$1" } }
+   },
+   "minutesShort": { "message": "min" },
+   "hoursShort": { "message": "h" },
+   "autoCheckWarning": { "message": "Warning: checking more often than every 3 minutes may overload the mail server." },
+   "toolbarLegend": { "message": "Toolbar Icon" },
+   "showCounter": { "message": "Show counter on toolbar button" },
+   "showMenu": { "message": "Show menu on click" },
+   "clickBehavior": { "message": "Single click: open mail / Double click: check now" },
+   "openingLegend": { "message": "Opening Email" },
+   "resetCounterOpt": { "message": "Reset counter upon opening email" },
+   "reuseTab": { "message": "Reuse existing email tab first" },
+   "openCurrent": { "message": "Open email in current tab" },
+   "openNew": { "message": "Open email in new tab" },
+   "openBackground": { "message": "Open email in new background tab" },
+
+   "aboutTitle": { "message": "About" },
+   "versionLabel": {
+      "message": "Version $V$",
+      "placeholders": { "v": { "content": "$1" } }
+   },
+   "createdBy": { "message": "Created by" },
+   "copyright": { "message": "Copyright © 2017 Sonthakit Leelahanon. All rights reserved." }
 }

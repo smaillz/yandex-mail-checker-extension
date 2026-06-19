@@ -1,0 +1,54 @@
+{
+   "author": {
+      "message": "Sonthakit Leelahanon"
+   },
+   "description": {
+      "message": "Безопасная проверка новой Яндекс.Почты."
+   },
+   "email": {
+      "message": "Яндекс.Почта"
+   },
+   "name": {
+      "message": "Проверка Яндекс.Почты"
+   },
+
+   "save": { "message": "Сохранить" },
+   "saved": { "message": "Сохранено" },
+   "aboutBtn": { "message": "О расширении" },
+   "optionsBtn": { "message": "Настройки..." },
+   "checkNow": { "message": "Проверить сейчас" },
+   "openMail": { "message": "Открыть почту" },
+
+   "optionsTitle": { "message": "Настройки" },
+   "siteLegend": { "message": "Почтовый сайт" },
+   "checkingLegend": { "message": "Проверка почты" },
+   "inboxOnly": { "message": "Считать непрочитанные только во «Входящих»" },
+   "autoCheckLegend": { "message": "Автопроверка" },
+   "often": { "message": "Часто" },
+   "never": { "message": "Никогда" },
+   "checkEvery": {
+      "message": "Проверять каждые: $INTERVAL$",
+      "placeholders": { "interval": { "content": "$1" } }
+   },
+   "minutesShort": { "message": "мин" },
+   "hoursShort": { "message": "ч" },
+   "autoCheckWarning": { "message": "Предупреждение: проверка чаще, чем раз в 3 минуты, может перегрузить почтовый сервер." },
+   "toolbarLegend": { "message": "Иконка на панели" },
+   "showCounter": { "message": "Показывать счётчик на кнопке" },
+   "showMenu": { "message": "Показывать меню по клику" },
+   "clickBehavior": { "message": "Одиночный клик — открыть почту / двойной — проверить" },
+   "openingLegend": { "message": "Открытие почты" },
+   "resetCounterOpt": { "message": "Сбрасывать счётчик при открытии почты" },
+   "reuseTab": { "message": "Сначала использовать существующую вкладку почты" },
+   "openCurrent": { "message": "Открывать в текущей вкладке" },
+   "openNew": { "message": "Открывать в новой вкладке" },
+   "openBackground": { "message": "Открывать в новой фоновой вкладке" },
+
+   "aboutTitle": { "message": "О расширении" },
+   "versionLabel": {
+      "message": "Версия $V$",
+      "placeholders": { "v": { "content": "$1" } }
+   },
+   "createdBy": { "message": "Автор" },
+   "copyright": { "message": "© 2017 Sonthakit Leelahanon. Все права защищены." }
+}
