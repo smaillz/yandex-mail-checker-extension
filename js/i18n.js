@@ -4,12 +4,12 @@
 //================================================================
 "use strict";
 
-const I18N = (() => {
-	const AVAILABLE = ["en", "ru"];
-	let messages = {};
+class I18N {
+	static #AVAILABLE = ["en", "ru"];
+	static #messages = {};
 
 	// Resolve the stored language ("auto"/"en"/"ru") to a supported locale.
-	async function resolveLang() {
+	static async #resolveLang() {
 		let lang = "auto";
 		try {
 			const { preference } = await chrome.storage.local.get("preference");
@@ -21,30 +21,30 @@ const I18N = (() => {
 			const ui = (chrome.i18n.getUILanguage?.() || "en").toLowerCase();
 			lang = ui.startsWith("ru") ? "ru" : "en";
 		}
-		return AVAILABLE.includes(lang) ? lang : "en";
+		return I18N.#AVAILABLE.includes(lang) ? lang : "en";
 	}
 
 	// Fetch a locale's messages.json from the packaged _locales folder.
-	async function loadLocale(lang) {
+	static async #loadLocale(lang) {
 		const url = chrome.runtime.getURL(`_locales/${lang}/messages.json`);
 		const response = await fetch(url);
 		return response.json();
 	}
 
 	// Load the active locale, falling back to English on error.
-	async function init() {
-		const lang = await resolveLang();
+	static async #init() {
+		const lang = await I18N.#resolveLang();
 		try {
-			messages = await loadLocale(lang);
+			I18N.#messages = await I18N.#loadLocale(lang);
 		} catch {
-			messages = await loadLocale("en").catch(() => ({}));
+			I18N.#messages = await I18N.#loadLocale("en").catch(() => ({}));
 		}
 		return lang;
 	}
 
 	// Look up a string with chrome.i18n-style placeholder substitution.
-	function getMessage(key, subs) {
-		const entry = messages[key];
+	static getMessage(key, subs) {
+		const entry = I18N.#messages[key];
 		if (!entry?.message) {
 			try { return chrome.i18n.getMessage(key, subs) || key; } catch { return key; }
 		}
@@ -60,32 +60,30 @@ const I18N = (() => {
 	}
 
 	// Fill [data-i18n] text and [data-i18n-value] values from the locale.
-	function localizePage() {
+	static localizePage() {
 		for (const node of document.querySelectorAll("[data-i18n]")) {
-			const message = getMessage(node.dataset.i18n);
+			const message = I18N.getMessage(node.dataset.i18n);
 			if (message) { node.textContent = message; }
 		}
 		for (const node of document.querySelectorAll("[data-i18n-value]")) {
-			const message = getMessage(node.dataset.i18nValue);
+			const message = I18N.getMessage(node.dataset.i18nValue);
 			if (message) { node.value = message; }
 		}
 	}
 
-	function whenDOMReady(fn) {
-		if (document.readyState === "loading") {
-			document.addEventListener("DOMContentLoaded", fn);
-		} else {
-			fn();
-		}
-	}
-
-	const ready = init();
-	ready.then(() => whenDOMReady(localizePage));
-
 	// Re-read the selected locale and re-render the page (after a language change).
-	function reload() {
-		return init().then(localizePage);
+	static reload() {
+		return I18N.#init().then(I18N.localizePage);
 	}
 
-	return { ready, getMessage, localizePage, reload };
-})();
+	// Resolves once the initial locale is loaded.
+	static ready = I18N.#init();
+}
+
+I18N.ready.then(() => {
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", I18N.localizePage);
+	} else {
+		I18N.localizePage();
+	}
+});
