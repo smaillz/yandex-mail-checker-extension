@@ -23,6 +23,6 @@
    "name": "__MSG_name__",
    "options_page": "html/options.html",
    "permissions": [ "tabs", "storage", "alarms" ],
-   "host_permissions": [ "*://*.yandex.com/", "*://*.yandex.by/", "*://*.yandex.kz/", "*://*.yandex.ru/", "*://*.yandex.com.tr/", "*://*.yandex.ua/" ],
+   "host_permissions": [ "*://*.yandex.com/*", "*://*.yandex.by/*", "*://*.yandex.kz/*", "*://*.yandex.ru/*", "*://*.yandex.com.tr/*", "*://*.yandex.ua/*" ],
    "version": "2.30"
 }

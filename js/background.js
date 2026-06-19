@@ -105,10 +105,13 @@ function mailLabel() {
 
 function setChecking() {
 	chrome.action.setTitle({ title: mailLabel() + ": Checking..." });
+	chrome.action.setBadgeBackgroundColor({ color: [60, 120, 216, 255] });
+	chrome.action.setBadgeText({ text: "…" });
 }
 
 function applyState(state, count, prefs) {
 	var label = mailLabel();
+	chrome.action.setBadgeBackgroundColor({ color: [211, 47, 47, 255] });
 	switch (state) {
 		case "unread":
 			setColorIcon();
@@ -173,7 +176,7 @@ function fetchUnreadCount(prefs) {
 	function next() {
 		if (step++ > 5) { return -1; }
 		return fetchText(method, url, body).then(function(text) {
-			var result = analyzeHTML(text);
+			var result = analyzeHTML(text, prefs.inbox);
 			if (typeof result === "number" && !isNaN(result)) {
 				return result;
 			}
@@ -283,8 +286,23 @@ function openMail() {
 // Scheduling
 //================================================
 function rescheduleAlarm(prefs) {
+	// Force recreate (used when the interval setting changes).
 	chrome.alarms.clear(ALARM_NAME, function() {
 		if (prefs.interval !== NEVER_INTERVAL) {
+			var minutes = Math.max(1, prefs.interval);
+			chrome.alarms.create(ALARM_NAME, { periodInMinutes: minutes });
+		}
+	});
+}
+
+function ensureAlarm(prefs) {
+	// Create only if missing, so frequent SW wakeups do not reset the countdown.
+	if (prefs.interval === NEVER_INTERVAL) {
+		chrome.alarms.clear(ALARM_NAME);
+		return;
+	}
+	chrome.alarms.get(ALARM_NAME, function(existing) {
+		if (!existing) {
 			var minutes = Math.max(1, prefs.interval);
 			chrome.alarms.create(ALARM_NAME, { periodInMinutes: minutes });
 		}
@@ -298,7 +316,7 @@ function applyPopupSetting(prefs) {
 function initialize() {
 	getPreference().then(function(prefs) {
 		applyPopupSetting(prefs);
-		rescheduleAlarm(prefs);
+		ensureAlarm(prefs);
 		checkNow();
 	});
 }

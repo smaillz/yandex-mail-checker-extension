@@ -23,9 +23,10 @@ var siteName = ["yandex.com", "yandex.by", "yandex.kz", "yandex.ru", "yandex.com
 //================================================
 // analyzeHTML
 //================================================
-function analyzeHTML(input) {
+function analyzeHTML(input, inboxPref) {
 	// Return status -3 =not connected, -2 =log out, -1 =unknown server response, 0+ =number unread email
 	// Return "GET" + " " + URL if redirect, Return "POST" + " " + URL + " " + PostData if FORM POST
+	// inboxPref mirrors the old preference.inbox flag.
 	var totalCount = -1; errorIndex = "point-H1";
 	var output = input;
 	if (output.length === 0) {
@@ -76,7 +77,7 @@ function analyzeHTML(input) {
 							}
 						}
 					}
-					if ((totalCount !== -1) && (preference.inbox)) {
+					if ((totalCount !== -1) && (inboxPref)) {
 						var output2 = "";
 						var output3 = "";
 						index = output.indexOf('</a>');
