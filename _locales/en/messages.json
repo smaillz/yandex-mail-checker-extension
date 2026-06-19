@@ -1,7 +1,4 @@
 {
-   "author": {
-      "message": "Sonthakit Leelahanon"
-   },
    "description": {
       "message": "Secure check new Yandex Mail™."
    },
@@ -60,7 +57,5 @@
    "versionLabel": {
       "message": "Version $V$",
       "placeholders": { "v": { "content": "$1" } }
-   },
-   "createdBy": { "message": "Created by" },
-   "copyright": { "message": "Copyright © 2017 Sonthakit Leelahanon. All rights reserved." }
+   }
 }

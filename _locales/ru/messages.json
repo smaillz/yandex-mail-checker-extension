@@ -1,7 +1,4 @@
 {
-   "author": {
-      "message": "Sonthakit Leelahanon"
-   },
    "description": {
       "message": "Безопасная проверка новой Яндекс.Почты."
    },
@@ -60,7 +57,5 @@
    "versionLabel": {
       "message": "Версия $V$",
       "placeholders": { "v": { "content": "$1" } }
-   },
-   "createdBy": { "message": "Автор" },
-   "copyright": { "message": "© 2017 Sonthakit Leelahanon. Все права защищены." }
+   }
 }
