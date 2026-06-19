@@ -3,6 +3,7 @@
 //================================================================
 "use strict";
 
+// Wire menu items to background actions; each closes the popup afterwards.
 document.addEventListener("DOMContentLoaded", () => {
 	const close = () => window.close();
 

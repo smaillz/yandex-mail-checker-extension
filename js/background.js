@@ -37,6 +37,7 @@ let i18nLang = null;
 //================================================
 // Preferences (chrome.storage.local)
 //================================================
+// Merge stored settings over defaults; persist defaults on first run.
 async function getPreference() {
 	const { preference } = await chrome.storage.local.get("preference");
 	const merged = { ...DEFAULT_PREFERENCE, ...(preference ?? {}) };
@@ -50,6 +51,7 @@ async function getPreference() {
 //================================================
 // Localization (locale chosen in settings)
 //================================================
+// Map the stored language ("auto"/"en"/"ru") to a concrete supported locale.
 function resolveLang(prefs) {
 	let lang = prefs?.lang || "auto";
 	if (lang === "auto") {
@@ -59,6 +61,7 @@ function resolveLang(prefs) {
 	return AVAILABLE_LANGS.includes(lang) ? lang : "en";
 }
 
+// Fetch the chosen locale's messages once; skip if already loaded for that lang.
 async function loadMessages(prefs) {
 	const lang = resolveLang(prefs);
 	if (i18nLang === lang) { return; }
@@ -71,6 +74,7 @@ async function loadMessages(prefs) {
 	}
 }
 
+// Look up a localized string with chrome.i18n-style placeholder substitution.
 function t(key, subs) {
 	const entry = i18nMessages[key];
 	if (!entry?.message) {
@@ -117,16 +121,19 @@ async function loadIconSet(grayscale) {
 	return Object.fromEntries(entries);
 }
 
+// Cached color icon set (shown when logged in / has mail).
 async function getColorIcons() {
 	colorIcons ??= await loadIconSet(false);
 	return colorIcons;
 }
 
+// Cached grayscale icon set (shown when logged out / error states).
 async function getGrayIcons() {
 	grayIcons ??= await loadIconSet(true);
 	return grayIcons;
 }
 
+// Swap the toolbar icon between the color (active) and gray (inactive) sets.
 async function setActionIcon(active) {
 	try {
 		const icons = active ? await getColorIcons() : await getGrayIcons();
@@ -140,16 +147,19 @@ async function setActionIcon(active) {
 //================================================
 // Apply status to the toolbar action
 //================================================
+// Localized prefix used in every toolbar tooltip (e.g. "Yandex Mail").
 function mailLabel() {
 	return t("email") || "Yandex Mail";
 }
 
+// Show a transient "checking" indicator (blue badge + tooltip).
 function setChecking() {
 	chrome.action.setTitle({ title: `${mailLabel()}: ${t("statusChecking")}` });
 	chrome.action.setBadgeBackgroundColor({ color: CHECKING_COLOR });
 	chrome.action.setBadgeText({ text: "…" });
 }
 
+// Render the toolbar icon, badge and tooltip for a given check result.
 function applyState(state, count, prefs) {
 	const label = mailLabel();
 	chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR });
@@ -192,6 +202,7 @@ function applyState(state, count, prefs) {
 //================================================
 // Check email
 //================================================
+// Fetch a URL as text with credentials and an abortable timeout.
 async function fetchText(method, url, body) {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort("timeout"), REQUEST_TIMEOUT_MS);
@@ -208,6 +219,7 @@ async function fetchText(method, url, body) {
 	}
 }
 
+// Follow the lite-inbox request/redirect chain and parse the unread count.
 async function fetchUnreadCount(prefs) {
 	let method = "GET";
 	let url = checkEmailURL[prefs.site];
@@ -235,6 +247,7 @@ async function fetchUnreadCount(prefs) {
 	return -1;
 }
 
+// Run a single mail check and reflect the result on the toolbar icon.
 async function checkNow() {
 	if (checking) { return; }
 	checking = true;
@@ -289,6 +302,7 @@ async function openURL(targetURL, openMode) {
 	}
 }
 
+// Clear the badge right after opening mail, if the user enabled that option.
 function resetCounterOnOpen(prefs) {
 	if (prefs.resetCounter) {
 		chrome.action.setBadgeText({ text: "" });
@@ -297,6 +311,7 @@ function resetCounterOnOpen(prefs) {
 	}
 }
 
+// Open Yandex Mail, optionally reusing an existing mail tab first.
 async function openMail() {
 	const prefs = await getPreference();
 	await loadMessages(prefs);
@@ -337,10 +352,12 @@ async function ensureAlarm(prefs) {
 	}
 }
 
+// Enable the popup menu, or clear it so clicks go to onClicked (single/double).
 function applyPopupSetting(prefs) {
 	chrome.action.setPopup({ popup: prefs.showPopup ? "html/popup.html" : "" });
 }
 
+// Apply settings, ensure the alarm exists and run an initial check.
 async function initialize() {
 	const prefs = await getPreference();
 	applyPopupSetting(prefs);

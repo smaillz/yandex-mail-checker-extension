@@ -24,11 +24,13 @@ const $ = (id) => document.getElementById(id);
 
 const msg = (key, subs) => I18N.getMessage(key, subs);
 
+// Read stored settings merged over defaults.
 async function getPreference() {
 	const { preference } = await chrome.storage.local.get("preference");
 	return { ...DEFAULT_PREFERENCE, ...(preference ?? {}) };
 }
 
+// Render the radio list of supported Yandex domains.
 function buildSiteList(selectedSite) {
 	const container = $("siteList");
 	container.replaceChildren();
@@ -46,6 +48,7 @@ function buildSiteList(selectedSite) {
 	});
 }
 
+// Format the slider value as a human-readable "check every ..." line.
 function updateAutoCheckText() {
 	const value = Number($("autoCheckRange").value);
 	let text;
@@ -62,15 +65,18 @@ function updateAutoCheckText() {
 	$("autoCheckText").textContent = msg("checkEvery", [text]);
 }
 
+// Convert a stored interval (minutes, or "never") to a slider position.
 function intervalToSlider(interval) {
 	if (interval === NEVER_INTERVAL) { return MAX_AUTO_CHECK_RANGE; }
 	return Math.min(180, Math.max(1, interval));
 }
 
+// Convert a slider position back to a stored interval value.
 function sliderToInterval(slider) {
 	return slider === MAX_AUTO_CHECK_RANGE ? NEVER_INTERVAL : slider;
 }
 
+// Populate every form control from the given preferences.
 function loadForm(prefs) {
 	$("lang").value = prefs.lang;
 	buildSiteList(prefs.site);
@@ -87,6 +93,7 @@ function loadForm(prefs) {
 	$("openEmailInNewBackgroundTab").checked = prefs.openBehavior === 2;
 }
 
+// Collect a preferences object from the current form state.
 function readForm() {
 	const selectedSite = SITE_NAMES.findIndex((_, i) => $(`site${i}`)?.checked);
 	let openBehavior = 1;
@@ -109,6 +116,7 @@ function readForm() {
 	};
 }
 
+// Fill texts that aren't static data-i18n nodes (title, version, interval).
 function applyDynamicTexts() {
 	$("name").textContent = msg("name");
 	$("aboutName").textContent = msg("name");
@@ -117,6 +125,7 @@ function applyDynamicTexts() {
 	updateAutoCheckText();
 }
 
+// Persist the form, notify the worker, then re-localize in case lang changed.
 async function saveForm() {
 	await chrome.storage.local.set({ preference: readForm() });
 	chrome.runtime.sendMessage({ type: "prefsUpdated" });

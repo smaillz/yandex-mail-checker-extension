@@ -8,6 +8,7 @@ const I18N = (() => {
 	const AVAILABLE = ["en", "ru"];
 	let messages = {};
 
+	// Resolve the stored language ("auto"/"en"/"ru") to a supported locale.
 	async function resolveLang() {
 		let lang = "auto";
 		try {
@@ -23,12 +24,14 @@ const I18N = (() => {
 		return AVAILABLE.includes(lang) ? lang : "en";
 	}
 
+	// Fetch a locale's messages.json from the packaged _locales folder.
 	async function loadLocale(lang) {
 		const url = chrome.runtime.getURL(`_locales/${lang}/messages.json`);
 		const response = await fetch(url);
 		return response.json();
 	}
 
+	// Load the active locale, falling back to English on error.
 	async function init() {
 		const lang = await resolveLang();
 		try {
@@ -39,6 +42,7 @@ const I18N = (() => {
 		return lang;
 	}
 
+	// Look up a string with chrome.i18n-style placeholder substitution.
 	function getMessage(key, subs) {
 		const entry = messages[key];
 		if (!entry?.message) {
@@ -55,6 +59,7 @@ const I18N = (() => {
 		return text;
 	}
 
+	// Fill [data-i18n] text and [data-i18n-value] values from the locale.
 	function localizePage() {
 		for (const node of document.querySelectorAll("[data-i18n]")) {
 			const message = getMessage(node.dataset.i18n);
