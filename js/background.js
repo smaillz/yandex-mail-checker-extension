@@ -30,6 +30,7 @@ var DEFAULT_PREFERENCE = {
 // In-memory (non-persistent) state
 //================================================
 var grayIcons = null;
+var colorIcons = null;
 var checking = false;
 var firstClickTime = 0;
 var clickTimer = null;
@@ -55,8 +56,9 @@ function getPreference() {
 //================================================
 // Icons
 //================================================
-function getGrayIcons() {
-	if (grayIcons) { return Promise.resolve(grayIcons); }
+function loadIconSet(grayscale) {
+	// Build ImageData from PNG files. setIcon with imageData is reliable in a
+	// service worker, unlike setIcon with a path which can fail to fetch.
 	var sources = { 19: "icons/c19.png", 38: "icons/c38.png" };
 	var sizes = [19, 38];
 	return Promise.all(sizes.map(function(size) {
@@ -68,25 +70,38 @@ function getGrayIcons() {
 				var ctx = canvas.getContext("2d");
 				ctx.drawImage(bitmap, 0, 0, size, size);
 				var imageData = ctx.getImageData(0, 0, size, size);
-				var data = imageData.data;
-				for (var i = 0; i < data.length; i += 4) {
-					var gray = Math.round(0.3 * data[i] + 0.59 * data[i + 1] + 0.11 * data[i + 2]);
-					data[i] = gray;
-					data[i + 1] = gray;
-					data[i + 2] = gray;
+				if (grayscale) {
+					var data = imageData.data;
+					for (var i = 0; i < data.length; i += 4) {
+						var gray = Math.round(0.3 * data[i] + 0.59 * data[i + 1] + 0.11 * data[i + 2]);
+						data[i] = gray;
+						data[i + 1] = gray;
+						data[i + 2] = gray;
+					}
 				}
 				return { size: size, imageData: imageData };
 			});
 	})).then(function(results) {
 		var map = {};
 		results.forEach(function(r) { map[r.size] = r.imageData; });
-		grayIcons = map;
-		return grayIcons;
+		return map;
 	});
 }
 
+function getColorIcons() {
+	if (colorIcons) { return Promise.resolve(colorIcons); }
+	return loadIconSet(false).then(function(map) { colorIcons = map; return map; });
+}
+
+function getGrayIcons() {
+	if (grayIcons) { return Promise.resolve(grayIcons); }
+	return loadIconSet(true).then(function(map) { grayIcons = map; return map; });
+}
+
 function setColorIcon() {
-	chrome.action.setIcon({ path: { 19: "icons/c19.png", 38: "icons/c38.png" } });
+	getColorIcons().then(function(icons) {
+		chrome.action.setIcon({ imageData: { 19: icons[19], 38: icons[38] } });
+	}).catch(function() {});
 }
 
 function setGrayIcon() {
