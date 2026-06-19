@@ -3,65 +3,87 @@
 	<head>
 		<meta charset="utf-8" />
 		<title data-i18n="optionsTitle">Options</title>
-		<link type="text/css" rel="stylesheet" href="../css/edition.css" />
+		<link type="text/css" rel="stylesheet" href="../css/options.css" />
 		<script src="../js/i18n.js" defer></script>
 		<script src="../js/options.js" defer></script>
-		<style>
-			body { font-family: sans-serif; padding: 12px; }
-			fieldset { margin-bottom: 14px; }
-			legend { font-weight: bold; }
-			.row { margin: 4px 0; }
-			#status { color: green; margin-left: 10px; }
-		</style>
 	</head>
-	<body class="body">
-		<table>
-			<tr>
-				<td><img src="../icons/c48.png" /></td>
-				<td><h1 id="name"></h1></td>
-			</tr>
-		</table>
+	<body>
+		<div class="page">
+			<header class="app-header">
+				<img class="app-icon" src="../icons/c48.png" alt="" />
+				<h1 id="name"></h1>
+			</header>
 
-		<div class="row">
-			<input type="button" id="save" data-i18n-value="save" value="Save" />
-			<span id="status"></span>
+			<main>
+				<section class="card">
+					<h2 data-i18n="siteLegend">Email Site</h2>
+					<div id="siteList" class="site-list"></div>
+				</section>
+
+				<section class="card">
+					<h2 data-i18n="checkingLegend">Email Checking</h2>
+					<label class="field">
+						<input type="checkbox" id="inbox" />
+						<span data-i18n="inboxOnly">Count only unread emails in Inbox</span>
+					</label>
+				</section>
+
+				<section class="card">
+					<h2 data-i18n="autoCheckLegend">Auto-check</h2>
+					<div class="range-row">
+						<span class="range-edge" data-i18n="often">Often</span>
+						<input id="autoCheckRange" type="range" min="1" max="181" step="1" />
+						<span class="range-edge" data-i18n="never">Never</span>
+					</div>
+					<div id="autoCheckText" class="hint hint-strong"></div>
+					<p class="hint" data-i18n="autoCheckWarning">Warning: checking more often than every 3 minutes may overload the mail server.</p>
+				</section>
+
+				<section class="card">
+					<h2 data-i18n="toolbarLegend">Toolbar Icon</h2>
+					<label class="field">
+						<input type="checkbox" id="showToolbarNumber" />
+						<span data-i18n="showCounter">Show counter on toolbar button</span>
+					</label>
+					<label class="field">
+						<input type="radio" name="iconClick" id="showPopup" />
+						<span data-i18n="showMenu">Show menu on click</span>
+					</label>
+					<label class="field">
+						<input type="radio" name="iconClick" id="noPopup" />
+						<span data-i18n="clickBehavior">Single click: open mail / Double click: check now</span>
+					</label>
+				</section>
+
+				<section class="card">
+					<h2 data-i18n="openingLegend">Opening Email</h2>
+					<label class="field">
+						<input type="checkbox" id="resetCounter" />
+						<span data-i18n="resetCounterOpt">Reset counter upon opening email</span>
+					</label>
+					<label class="field">
+						<input type="checkbox" id="reUseExistingMailTab" />
+						<span data-i18n="reuseTab">Reuse existing email tab first</span>
+					</label>
+					<label class="field">
+						<input type="radio" name="openBehavior" id="openEmailInCurrentTab" />
+						<span data-i18n="openCurrent">Open email in current tab</span>
+					</label>
+					<label class="field">
+						<input type="radio" name="openBehavior" id="openEmailInNewTab" />
+						<span data-i18n="openNew">Open email in new tab</span>
+					</label>
+					<label class="field">
+						<input type="radio" name="openBehavior" id="openEmailInNewBackgroundTab" />
+						<span data-i18n="openBackground">Open email in new background tab</span>
+					</label>
+				</section>
+			</main>
 		</div>
 
-		<fieldset>
-			<legend data-i18n="siteLegend">Email Site</legend>
-			<div id="siteList"></div>
-		</fieldset>
-
-		<fieldset>
-			<legend data-i18n="checkingLegend">Email Checking</legend>
-			<div class="row"><label><input type="checkbox" id="inbox" /> <span data-i18n="inboxOnly">Count only unread emails in Inbox</span></label></div>
-		</fieldset>
-
-		<fieldset>
-			<legend data-i18n="autoCheckLegend">Auto-check</legend>
-			<div class="row">
-				<span data-i18n="often">Often</span>
-				<input id="autoCheckRange" type="range" min="1" max="181" step="1" />
-				<span data-i18n="never">Never</span>
-			</div>
-			<div class="row" id="autoCheckText"></div>
-			<div class="row"><small data-i18n="autoCheckWarning">Warning: checking more often than every 3 minutes may overload the mail server.</small></div>
-		</fieldset>
-
-		<fieldset>
-			<legend data-i18n="toolbarLegend">Toolbar Icon</legend>
-			<div class="row"><label><input type="checkbox" id="showToolbarNumber" /> <span data-i18n="showCounter">Show counter on toolbar button</span></label></div>
-			<div class="row"><label><input type="radio" name="iconClick" id="showPopup" /> <span data-i18n="showMenu">Show menu on click</span></label></div>
-			<div class="row"><label><input type="radio" name="iconClick" id="noPopup" /> <span data-i18n="clickBehavior">Single click: open mail / Double click: check now</span></label></div>
-		</fieldset>
-
-		<fieldset>
-			<legend data-i18n="openingLegend">Opening Email</legend>
-			<div class="row"><label><input type="checkbox" id="resetCounter" /> <span data-i18n="resetCounterOpt">Reset counter upon opening email</span></label></div>
-			<div class="row"><label><input type="checkbox" id="reUseExistingMailTab" /> <span data-i18n="reuseTab">Reuse existing email tab first</span></label></div>
-			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInCurrentTab" /> <span data-i18n="openCurrent">Open email in current tab</span></label></div>
-			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewTab" /> <span data-i18n="openNew">Open email in new tab</span></label></div>
-			<div class="row"><label><input type="radio" name="openBehavior" id="openEmailInNewBackgroundTab" /> <span data-i18n="openBackground">Open email in new background tab</span></label></div>
-		</fieldset>
+		<footer class="save-bar">
+			<button type="button" id="save" class="btn-primary" data-i18n="save">Save</button>
+			<span id="status" class="status"></span>
+		</footer>
 	</body>
 </html>

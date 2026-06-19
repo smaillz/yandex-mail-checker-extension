@@ -38,18 +38,16 @@ function buildSiteList(selectedSite) {
 	const container = $("siteList");
 	container.replaceChildren();
 	SITE_NAMES.forEach((name, index) => {
-		const label = document.createElement("label");
 		const radio = document.createElement("input");
 		radio.type = "radio";
 		radio.name = "site";
 		radio.id = `site${index}`;
 		radio.checked = index === selectedSite;
-		label.append(radio, ` ${name}`);
 
-		const row = document.createElement("div");
-		row.className = "row";
-		row.append(label);
-		container.append(row);
+		const label = document.createElement("label");
+		label.className = "field";
+		label.append(radio, ` ${name}`);
+		container.append(label);
 	});
 }
 
