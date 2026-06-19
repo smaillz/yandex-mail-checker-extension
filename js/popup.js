@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		window.close();
 	});
 	document.getElementById("about").addEventListener("click", function() {
-		chrome.tabs.create({ url: chrome.runtime.getURL("about.html") });
+		chrome.tabs.create({ url: chrome.runtime.getURL("html/about.html") });
 		window.close();
 	});
 });

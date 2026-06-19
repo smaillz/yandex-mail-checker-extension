@@ -57,7 +57,7 @@ function getPreference() {
 //================================================
 function getGrayIcons() {
 	if (grayIcons) { return Promise.resolve(grayIcons); }
-	var sources = { 19: "c19.png", 38: "c38.png" };
+	var sources = { 19: "icons/c19.png", 38: "icons/c38.png" };
 	var sizes = [19, 38];
 	return Promise.all(sizes.map(function(size) {
 		return fetch(chrome.runtime.getURL(sources[size]))
@@ -86,7 +86,7 @@ function getGrayIcons() {
 }
 
 function setColorIcon() {
-	chrome.action.setIcon({ path: { 19: "c19.png", 38: "c38.png" } });
+	chrome.action.setIcon({ path: { 19: "icons/c19.png", 38: "icons/c38.png" } });
 }
 
 function setGrayIcon() {
@@ -292,7 +292,7 @@ function rescheduleAlarm(prefs) {
 }
 
 function applyPopupSetting(prefs) {
-	chrome.action.setPopup({ popup: prefs.showPopup ? "popup.html" : "" });
+	chrome.action.setPopup({ popup: prefs.showPopup ? "html/popup.html" : "" });
 }
 
 function initialize() {
