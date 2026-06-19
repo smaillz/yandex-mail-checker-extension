@@ -48,6 +48,16 @@
 (`manifest.json`, `_locales`, `css`, `html`, `js`, `icons`). Этот `.zip` загружается в
 Chrome Web Store или передаётся для ручной установки.
 
+### Автоматический релиз (GitHub Actions)
+
+При пуше тега вида `vX.Y.Z` workflow `.github/workflows/release.yml` сам соберёт zip
+и приложит его к GitHub Release:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
 Варианты установки:
 
 - **Для себя / разработка** — «Загрузить распакованное» (см. выше), пакет не нужен.
